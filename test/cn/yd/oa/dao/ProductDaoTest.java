@@ -29,7 +29,7 @@ public class ProductDaoTest {
 	public void testSave() {
 		Product p=new Product();
 		p.setName("新版手机");
-		p.setPrice(123600.0);
+		p.setPrice(600.0);
 		p.setRemark("海外直销");
 		productDao.save(p);
 		
@@ -38,7 +38,7 @@ public class ProductDaoTest {
 	@Test
 	public void testDelete() {
 		Product p=new Product();
-		p.setId(1);
+		p.setId(2);
 		productDao.delete(p.getId());
 		
 	}
@@ -47,11 +47,18 @@ public class ProductDaoTest {
 	public void testUpdate() {
 		Product p=new Product();
 		p.setName("锤子手机");
-		p.setPrice(3600.0);
-		p.setId(1);
+		p.setPrice(123.0);
+		p.setId(6);
 		p.setRemark("山寨手机");
 		productDao.update(p);
 		
+	}
+	
+	@Test
+	public void testGetById() {
+		
+		Product product = productDao.getById(3);
+		System.out.println(product);
 	}
 
 }

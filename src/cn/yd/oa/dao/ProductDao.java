@@ -2,79 +2,56 @@ package cn.yd.oa.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import cn.yd.oa.model.Product;
 import cn.yd.oa.utils.JdbcUtils;
 
-public class ProductDao {
-	
-	public static void main(String[] args) {
-		ProductDao dao = new ProductDao();
-		Product product = new Product();
-		product.setName("黑莓");
-		product.setPrice(13700.00);
-		product.setRemark("新款手机");
-		product.setId(2);
-//		dao.save(product);
-//		dao.delete(3);
-		dao.update(product);
-	}
-	
+public class ProductDao extends BaseDao {
+
 	public void save(Product product) {
 		String sql = "insert into product(name,price,remark) values(?,?,?)";
-		JdbcUtils jdbcUtils = new JdbcUtils();
-		Connection connection = jdbcUtils.getConnection();
+		super.update(sql, new Object[] { product.getName(), product.getPrice(), product.getRemark() });
+	}
+
+	public void delete(Integer id) {
+		String sql = "delete from product where id = ?";
+		super.update(sql, new Object[] { id });
+
+	}
+
+	public void update(Product product) {
+		String sql = "update product set price=?,remark=? where id = ?";
+		super.update(sql, new Object[] { product.getPrice(), product.getRemark(), product.getId() });
+	}
+
+	// 查询一条记录
+	public Product getById(Integer id) {
+		Product product = null;
+		String sql = "select * from product where id = ?";
+		JdbcUtils utils = new JdbcUtils();
+		Connection connection = utils.getConnection();
+		PreparedStatement prep;
 		try {
-			PreparedStatement prep = connection.prepareStatement(sql);
-			prep.setString(1, product.getName());
-			prep.setDouble(2, product.getPrice());
-			prep.setString(3, product.getRemark());
-			
-			int count = prep.executeUpdate();
-			System.out.println(count);
+			prep = connection.prepareStatement(sql);
+			prep.setInt(1, id);
+			ResultSet rs = prep.executeQuery();
+			if (rs.next()) {
+				product = new Product();
+				product.setId(rs.getInt("id"));
+				product.setName(rs.getString("name"));
+				product.setPrice(rs.getDouble("price"));
+				product.setDate(rs.getDate("date"));
+				product.setRemark(rs.getString("remark"));
+
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-//			e.printStackTrace();
+			// e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-	}
 
-public void delete(Integer id) {
-	String sql = "delete from product where id = ?";
-	JdbcUtils jdbcUtils = new JdbcUtils();
-	Connection connection = jdbcUtils.getConnection();
-	try {
-		PreparedStatement prep = connection.prepareStatement(sql);
-		prep.setInt(1, id);
-		
-		int count = prep.executeUpdate();
-		System.out.println(count);
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-//		e.printStackTrace();
-		throw new RuntimeException(e);
+		return product;
 	}
-}
-
-
-public void update(Product product) {
-	String sql = "update product set price=?,remark=? where id = ?";
-	JdbcUtils jdbcUtils = new JdbcUtils();
-	Connection connection = jdbcUtils.getConnection();
-	try {
-		PreparedStatement prep = connection.prepareStatement(sql);
-		
-		prep.setDouble(1, product.getPrice());
-		prep.setString(2, product.getRemark());
-		prep.setInt(3, product.getId());
-		
-		int count = prep.executeUpdate();
-		System.out.println(count);
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-//		e.printStackTrace();
-		throw new RuntimeException(e);
-	}
-}
 }

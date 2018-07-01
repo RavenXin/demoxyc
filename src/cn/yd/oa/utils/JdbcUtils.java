@@ -23,7 +23,7 @@ public class JdbcUtils {
 	}
 	
 	static {
-		System.out.println("¾²Ì¬¿é");
+//		System.out.println("¾²Ì¬¿é");
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
