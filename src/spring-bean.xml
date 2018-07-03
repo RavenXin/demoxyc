@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="
+http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+">
+ 	<!-- XML：两种 合法的XML（符合语法），有效的XML，XML区分大小写 -->
+ 	
+ 	<bean id = "tm"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+ 	<property name="dataSource" ref="ds"></property>
+ 	</bean>
+ 	
+ 	<tx:advice id="ad" transaction-manager="tm">
+ 		<tx:attributes>
+ 			<tx:method name="save*"/>
+ 			<tx:method name="update*"/>
+ 			<tx:method name="delete*"/>
+ 		</tx:attributes>
+ 	</tx:advice>
+ 	
+ 	<aop:config>
+ 	<aop:pointcut expression="execution(* cn.yd.oa.service.*.*(..))" id="pt"/>
+ 	<aop:advisor advice-ref="ad" pointcut-ref="pt"/>
+ 	</aop:config> 	
+ 
+ <!-- ProductDao ==> BaseDao ==> JdbcUtils   ProductDao ==> JdbctTemplate ===> DataSource -->
+    <bean id = "ds"  class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	<property name="jdbcUrl" value="jdbc:mysql://localhost:16608/xyc" />
+	<property name="password" value="asd123456" />
+	<property name="user" value="qwe" />
+	<property name="driverClass" value="com.mysql.jdbc.Driver" />
+	</bean>
+	<bean id="jt"  class="org.springframework.jdbc.core.JdbcTemplate">
+	<!-- name="dataSource 对应的是源码中的set方法" -->
+	<property name="dataSource" ref="ds"></property>
+	</bean>
+	
+	<bean id="pd" class="cn.yd.oa.dao.ProductDao">
+	<property name="jdbcTemplate" ref="jt"></property>
+	</bean>
+	
+	<bean id="ps" class="cn.yd.oa.service.ProductService">
+	<property name="productDao" ref="pd"></property>
+	</bean>
+	
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+
+
